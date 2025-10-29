@@ -1,5 +1,5 @@
 # ===============================
-# 💧 SCADA Turbidity Dashboard - Enhanced with Dark/Light Mode and Temp/Pressure
+# 💧 SCADA Turbidity Dashboard - Mobile Responsive Version
 # ===============================
 
 import streamlit as st
@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 st.set_page_config(
     page_title="SCADA Turbidity Monitor",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # Auto-collapse sidebar on mobile
 )
 
 # -------------------------------
@@ -108,7 +108,7 @@ def get_theme_colors():
 colors = get_theme_colors()
 
 # -------------------------------
-# APPLY CUSTOM CSS
+# APPLY CUSTOM CSS WITH MOBILE RESPONSIVE
 # -------------------------------
 st.markdown(f"""
 <style>
@@ -131,15 +131,10 @@ footer {{visibility: hidden !important;}}
 .stDeployButton {{display: none !important;}}
 header {{visibility: hidden !important;}}
 .stAppHeader {{display: none !important;}}
+.stAppToolbar {{display: none !important;}}
 
-/* Remove white header bar */
 .stApp > header {{
     background-color: transparent !important;
-}}
-
-/* Fix toolbar */
-.stAppToolbar {{
-    display: none !important;
 }}
 
 /* Sidebar Styling */
@@ -152,27 +147,31 @@ header {{visibility: hidden !important;}}
     color: {colors['text_primary']};
 }}
 
-/* Top Navigation Bar */
+/* Top Navigation Bar - RESPONSIVE */
 .top-nav {{
     background: {colors['bg_card']};
-    padding: 1.5rem 2rem;
-    border-radius: 20px;
-    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
     box-shadow: {colors['shadow']};
     border: 1px solid {colors['border']};
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }}
 
 .nav-brand {{
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 200px;
 }}
 
 .nav-logo {{
-    font-size: 2.5rem;
+    font-size: 2rem;
     animation: float 3s ease-in-out infinite;
 }}
 
@@ -182,36 +181,38 @@ header {{visibility: hidden !important;}}
 }}
 
 .nav-title {{
-    font-size: 1.8rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: {colors['text_primary']};
     background: linear-gradient(135deg, #3b82f6, #10b981);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    line-height: 1.2;
 }}
 
 .nav-subtitle {{
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: {colors['text_secondary']};
-    margin-top: 0.25rem;
+    margin-top: 0.15rem;
 }}
 
 .status-live {{
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    white-space: nowrap;
 }}
 
 .pulse-dot {{
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background: white;
     border-radius: 50%;
     animation: pulse 2s ease-in-out infinite;
@@ -222,49 +223,49 @@ header {{visibility: hidden !important;}}
     50% {{ opacity: 0.5; transform: scale(1.2); }}
 }}
 
-/* SCADA Cards */
+/* SCADA Cards - RESPONSIVE */
 .scada-card {{
     background: {colors['bg_card']};
-    border-radius: 20px;
-    padding: 1.25rem;
+    border-radius: 15px;
+    padding: 1rem;
     box-shadow: {colors['shadow']};
     border: 1px solid {colors['border']};
     text-align: center;
     transition: all 0.3s ease;
     height: 100%;
-    min-height: 320px;
+    min-height: 280px;
 }}
 
 .scada-card:hover {{
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }}
 
 .card-title {{
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: {colors['text_primary']};
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }}
 
 .card-icon {{
-    font-size: 1.35rem;
+    font-size: 1.2rem;
 }}
 
 /* Status Badge */
 .status-badge {{
     display: inline-block;
-    padding: 0.4rem 1rem;
-    border-radius: 18px;
+    padding: 0.35rem 0.85rem;
+    border-radius: 15px;
     font-weight: 700;
-    font-size: 0.85rem;
-    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }}
 
@@ -283,24 +284,24 @@ header {{visibility: hidden !important;}}
     color: white;
 }}
 
-/* Tank Visualization */
+/* Tank Visualization - RESPONSIVE */
 .tank-container {{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem;
+    padding: 0.5rem;
 }}
 
 .tank {{
-    width: 120px;
-    height: 170px;
+    width: 100px;
+    height: 140px;
     background: {colors['liquid_tank']};
-    border: 5px solid {colors['liquid_fill']};
-    border-radius: 12px 12px 20px 20px;
+    border: 4px solid {colors['liquid_fill']};
+    border-radius: 10px 10px 18px 18px;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15);
 }}
 
 .liquid {{
@@ -318,24 +319,24 @@ header {{visibility: hidden !important;}}
 }}
 
 .tank-label {{
-    margin-top: 0.85rem;
+    margin-top: 0.6rem;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: {colors['text_primary']};
 }}
 
-/* Gauge Visualization */
+/* Gauge Visualization - RESPONSIVE */
 .gauge-container {{
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
     padding: 0.5rem;
 }}
 
 .gauge {{
-    width: 140px;
-    height: 140px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     background: conic-gradient(
         #10b981 0deg,
@@ -353,8 +354,8 @@ header {{visibility: hidden !important;}}
 .gauge::after {{
     content: "";
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
     background: {colors['bg_secondary']};
 }}
@@ -362,21 +363,21 @@ header {{visibility: hidden !important;}}
 .gauge-value {{
     position: relative;
     z-index: 2;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: {colors['text_primary']};
 }}
 
 .gauge-label {{
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: {colors['text_secondary']};
     font-weight: 600;
 }}
 
-/* Mini Gauge for multiple sensors */
+/* Mini Gauge - RESPONSIVE */
 .mini-gauge {{
-    width: 110px;
-    height: 110px;
+    width: 95px;
+    height: 95px;
     border-radius: 50%;
     background: conic-gradient(
         var(--color) calc(var(--value) * 3.6deg),
@@ -392,8 +393,8 @@ header {{visibility: hidden !important;}}
 .mini-gauge::after {{
     content: "";
     position: absolute;
-    width: 72px;
-    height: 72px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: {colors['bg_secondary']};
 }}
@@ -401,19 +402,19 @@ header {{visibility: hidden !important;}}
 .mini-gauge-value {{
     position: relative;
     z-index: 2;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: {colors['text_primary']};
 }}
 
-/* Progress Bar */
+/* Progress Bar - RESPONSIVE */
 .progress-container {{
     width: 100%;
-    height: 24px;
+    height: 20px;
     background: {colors['gauge_bg']};
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
 }}
 
@@ -421,7 +422,7 @@ header {{visibility: hidden !important;}}
     height: 100%;
     background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
     transition: width 0.6s ease;
-    border-radius: 12px;
+    border-radius: 10px;
     position: relative;
     overflow: hidden;
 }}
@@ -442,65 +443,368 @@ header {{visibility: hidden !important;}}
     100% {{ transform: translateX(100%); }}
 }}
 
-/* Chart Container - FIXED */
+/* Chart Container - RESPONSIVE */
 .chart-container {{
     background: {colors['bg_card']};
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 15px;
+    padding: 1rem;
     box-shadow: {colors['shadow']};
     border: 1px solid {colors['border']};
-    margin-top: 1.5rem;
+    margin-top: 1rem;
 }}
 
 .chart-title {{
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: {colors['text_primary']};
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     text-align: center;
 }}
 
 /* Footer */
 .footer {{
     text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
+    padding: 0.75rem;
+    margin-top: 1.5rem;
     background: {colors['bg_card']};
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: {colors['shadow']};
     border: 1px solid {colors['border']};
     color: {colors['text_secondary']};
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }}
 
 /* Refresh Info */
 .refresh-info {{
     text-align: center;
     color: {colors['text_secondary']};
-    font-size: 0.85rem;
-    margin-top: 1rem;
-    padding: 0.75rem;
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.6rem;
     background: {colors['bg_secondary']};
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid {colors['border']};
 }}
 
 /* Value Display */
 .value-display {{
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     color: {colors['text_secondary']};
-    margin-top: 0.4rem;
+    margin-top: 0.3rem;
 }}
 
 /* Streamlit specific fixes */
 .block-container {{
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }}
 
-/* Fix spacing between rows */
 .row-widget {{
-    margin-bottom: 1rem !important;
+    margin-bottom: 0.75rem !important;
+}}
+
+/* ================================
+   MOBILE RESPONSIVE BREAKPOINTS
+   ================================ */
+
+/* Tablets and smaller (max-width: 768px) */
+@media (max-width: 768px) {{
+    .top-nav {{
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        flex-direction: column;
+        text-align: center;
+    }}
+    
+    .nav-brand {{
+        justify-content: center;
+        min-width: unset;
+    }}
+    
+    .nav-logo {{
+        font-size: 1.75rem;
+    }}
+    
+    .nav-title {{
+        font-size: 1.1rem;
+    }}
+    
+    .nav-subtitle {{
+        font-size: 0.7rem;
+    }}
+    
+    .status-live {{
+        padding: 0.4rem 0.85rem;
+        font-size: 0.75rem;
+    }}
+    
+    .scada-card {{
+        padding: 0.85rem;
+        border-radius: 12px;
+        min-height: 240px;
+    }}
+    
+    .card-title {{
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }}
+    
+    .card-icon {{
+        font-size: 1rem;
+    }}
+    
+    .tank {{
+        width: 85px;
+        height: 120px;
+        border: 3px solid {colors['liquid_fill']};
+    }}
+    
+    .tank-label {{
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }}
+    
+    .mini-gauge {{
+        width: 80px;
+        height: 80px;
+    }}
+    
+    .mini-gauge::after {{
+        width: 55px;
+        height: 55px;
+    }}
+    
+    .mini-gauge-value {{
+        font-size: 0.85rem;
+    }}
+    
+    .gauge-label {{
+        font-size: 0.75rem;
+    }}
+    
+    .status-badge {{
+        font-size: 0.7rem;
+        padding: 0.3rem 0.7rem;
+        margin-top: 0.4rem;
+    }}
+    
+    .value-display {{
+        font-size: 0.7rem;
+    }}
+    
+    .progress-container {{
+        height: 18px;
+    }}
+    
+    .chart-container {{
+        padding: 0.85rem;
+        border-radius: 12px;
+    }}
+    
+    .chart-title {{
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }}
+    
+    .refresh-info {{
+        font-size: 0.7rem;
+        padding: 0.5rem;
+    }}
+    
+    .footer {{
+        font-size: 0.7rem;
+        padding: 0.6rem;
+    }}
+    
+    .block-container {{
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }}
+}}
+
+/* Mobile phones (max-width: 480px) */
+@media (max-width: 480px) {{
+    .top-nav {{
+        padding: 0.6rem 0.75rem;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }}
+    
+    .nav-logo {{
+        font-size: 1.5rem;
+    }}
+    
+    .nav-title {{
+        font-size: 0.95rem;
+    }}
+    
+    .nav-subtitle {{
+        font-size: 0.65rem;
+    }}
+    
+    .status-live {{
+        padding: 0.35rem 0.7rem;
+        font-size: 0.7rem;
+    }}
+    
+    .pulse-dot {{
+        width: 6px;
+        height: 6px;
+    }}
+    
+    .scada-card {{
+        padding: 0.75rem;
+        border-radius: 10px;
+        min-height: 220px;
+    }}
+    
+    .card-title {{
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+        gap: 0.3rem;
+    }}
+    
+    .card-icon {{
+        font-size: 0.9rem;
+    }}
+    
+    .tank {{
+        width: 70px;
+        height: 100px;
+        border: 3px solid {colors['liquid_fill']};
+        border-radius: 8px 8px 15px 15px;
+    }}
+    
+    .tank-label {{
+        font-size: 0.75rem;
+        margin-top: 0.4rem;
+    }}
+    
+    .mini-gauge {{
+        width: 70px;
+        height: 70px;
+    }}
+    
+    .mini-gauge::after {{
+        width: 48px;
+        height: 48px;
+    }}
+    
+    .mini-gauge-value {{
+        font-size: 0.75rem;
+    }}
+    
+    .gauge-label {{
+        font-size: 0.7rem;
+        margin-top: 0.3rem;
+    }}
+    
+    .status-badge {{
+        font-size: 0.65rem;
+        padding: 0.25rem 0.6rem;
+        margin-top: 0.35rem;
+        border-radius: 12px;
+    }}
+    
+    .value-display {{
+        font-size: 0.65rem;
+        margin-top: 0.25rem;
+    }}
+    
+    .progress-container {{
+        height: 16px;
+        margin-top: 0.4rem;
+    }}
+    
+    .chart-container {{
+        padding: 0.75rem;
+        border-radius: 10px;
+        margin-top: 0.75rem;
+    }}
+    
+    .chart-title {{
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+    }}
+    
+    .refresh-info {{
+        font-size: 0.65rem;
+        padding: 0.45rem;
+        margin-top: 0.5rem;
+        border-radius: 6px;
+    }}
+    
+    .footer {{
+        font-size: 0.65rem;
+        padding: 0.5rem;
+        margin-top: 1rem;
+        border-radius: 8px;
+    }}
+    
+    .block-container {{
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+    }}
+}}
+
+/* Extra small devices (max-width: 360px) */
+@media (max-width: 360px) {{
+    .nav-title {{
+        font-size: 0.85rem;
+    }}
+    
+    .nav-subtitle {{
+        font-size: 0.6rem;
+    }}
+    
+    .card-title {{
+        font-size: 0.75rem;
+    }}
+    
+    .mini-gauge {{
+        width: 65px;
+        height: 65px;
+    }}
+    
+    .mini-gauge::after {{
+        width: 45px;
+        height: 45px;
+    }}
+    
+    .mini-gauge-value {{
+        font-size: 0.7rem;
+    }}
+    
+    .tank {{
+        width: 60px;
+        height: 90px;
+    }}
+}}
+
+/* Landscape mode adjustments for mobile */
+@media (max-height: 500px) and (orientation: landscape) {{
+    .scada-card {{
+        min-height: 180px;
+    }}
+    
+    .mini-gauge {{
+        width: 65px;
+        height: 65px;
+    }}
+    
+    .mini-gauge::after {{
+        width: 45px;
+        height: 45px;
+    }}
+    
+    .tank {{
+        width: 60px;
+        height: 85px;
+    }}
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -615,7 +919,7 @@ st.markdown(f"""
         <div class="nav-logo">🌊</div>
         <div>
             <div class="nav-title">SCADA SYSTEM TIRTAWENING</div>
-            <div class="nav-subtitle">Real-time Water Quality Monitoring Dashboard</div>
+            <div class="nav-subtitle">Real-time Water Quality Monitoring</div>
         </div>
     </div>
     <div class="status-live">
@@ -674,7 +978,7 @@ while True:
         # -------------------------------
         # ROW 1: MAIN SCADA WIDGETS
         # -------------------------------
-        col1, col2, col3, col4 = st.columns([1, 1, 1, 1], gap="medium")
+        col1, col2, col3, col4 = st.columns([1, 1, 1, 1], gap="small")
 
         with col1:
             st.markdown(f"""
@@ -699,7 +1003,7 @@ while True:
             <div class="scada-card">
                 <div class="card-title">
                     <span class="card-icon">🧪</span>
-                    Turbidity (PTU-300)
+                    PTU-300
                 </div>
                 <div class="gauge-container">
                     <div>
@@ -721,7 +1025,7 @@ while True:
             <div class="scada-card">
                 <div class="card-title">
                     <span class="card-icon">🧪</span>
-                    Turbidity (PTU-8011)
+                    PTU-8011
                 </div>
                 <div class="gauge-container">
                     <div>
@@ -771,11 +1075,11 @@ while True:
                     <div class="progress-container" style="margin-top:0.5rem;">
                         <div class="progress-fill" style="width:{flow_percent}%;"></div>
                     </div>
-                    <div class="status-badge {flow_status['class']}" style="margin-top:0.6rem;">
+                    <div class="status-badge {flow_status['class']}" style="margin-top:0.5rem;">
                         {flow_status['icon']} {flow_status['status']}
                     </div>
-                    <div class="value-display" style="margin-top:0.4rem;">
-                        {flow_rate:.2f} L/min ({flow_percent:.1f}%)
+                    <div class="value-display" style="margin-top:0.3rem;">
+                        {flow_percent:.1f}%
                     </div>
                 </div>
             </div>
@@ -784,7 +1088,7 @@ while True:
         # -------------------------------
         # ROW 2: Temperature & Pressure & pH
         # -------------------------------
-        col_t, col_p, col_ph, col_empty = st.columns([1, 1, 1, 1], gap="medium")
+        col_t, col_p, col_ph = st.columns([1, 1, 1], gap="small")
 
         with col_t:
             try:
@@ -804,13 +1108,13 @@ while True:
                 </div>
                 <div class="gauge-container">
                     <div class="mini-gauge" style="--value:{temp_percent}; --color:{temp_color};">
-                        <div class="mini-gauge-value">{temperature:.2f}</div>
+                        <div class="mini-gauge-value">{temperature:.1f}</div>
                     </div>
                     <div class="gauge-label" style="margin-top:0.4rem;">°C</div>
                     <div class="status-badge {temp_class}">
                         {temp_status}
                     </div>
-                    <div class="value-display">Normal: 20 - 30 °C</div>
+                    <div class="value-display">20-30 °C</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -839,7 +1143,7 @@ while True:
                     <div class="status-badge {pressure_class}">
                         {pressure_status}
                     </div>
-                    <div class="value-display">Normal: 1.0 - 2.0 Bar</div>
+                    <div class="value-display">1.0-2.0 Bar</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -864,11 +1168,11 @@ while True:
                     <div class="mini-gauge" style="--value:{ph_percent}; --color:{ph_color};">
                         <div class="mini-gauge-value">{ph_value:.2f}</div>
                     </div>
-                    <div class="gauge-label" style="margin-top:0.4rem;">pH Value</div>
+                    <div class="gauge-label" style="margin-top:0.4rem;">pH</div>
                     <div class="status-badge {ph_class}">
                         {ph_status}
                     </div>
-                    <div class="value-display">Ideal Range: 6.5 - 8.5</div>
+                    <div class="value-display">6.5-8.5</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -877,10 +1181,10 @@ while True:
         # ROW 3: TREND CHART WITH PLOTLY
         # -------------------------------
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.markdown('<div class="chart-title">📈 Trend Analysis (Turbidity, Temperature, Flow, pH)</div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-title">📈 Trend Analysis</div>', unsafe_allow_html=True)
 
         if len(st.session_state.history) > 0:
-            # Create Plotly chart with dark theme
+            # Create Plotly chart with theme
             fig = go.Figure()
 
             # Add traces for each parameter
@@ -890,7 +1194,7 @@ while True:
                 mode='lines+markers',
                 name='PTU-300',
                 line=dict(color='#3b82f6', width=2),
-                marker=dict(size=4)
+                marker=dict(size=3)
             ))
 
             fig.add_trace(go.Scatter(
@@ -899,16 +1203,16 @@ while True:
                 mode='lines+markers',
                 name='PTU-8011',
                 line=dict(color='#10b981', width=2),
-                marker=dict(size=4)
+                marker=dict(size=3)
             ))
 
             fig.add_trace(go.Scatter(
                 x=st.session_state.history['time'],
                 y=st.session_state.history['Temperature'],
                 mode='lines+markers',
-                name='Temperature',
+                name='Temp',
                 line=dict(color='#f59e0b', width=2),
-                marker=dict(size=4)
+                marker=dict(size=3)
             ))
 
             fig.add_trace(go.Scatter(
@@ -917,7 +1221,7 @@ while True:
                 mode='lines+markers',
                 name='Flow',
                 line=dict(color='#8b5cf6', width=2),
-                marker=dict(size=4)
+                marker=dict(size=3)
             ))
 
             fig.add_trace(go.Scatter(
@@ -926,17 +1230,17 @@ while True:
                 mode='lines+markers',
                 name='pH',
                 line=dict(color='#ec4899', width=2),
-                marker=dict(size=4)
+                marker=dict(size=3)
             ))
 
             # Update layout based on theme
             fig.update_layout(
-                height=350,
+                height=300,
                 plot_bgcolor=colors['chart_bg'],
                 paper_bgcolor=colors['chart_bg'],
                 font=dict(
                     color=colors['chart_text'],
-                    size=11
+                    size=10
                 ),
                 xaxis=dict(
                     showgrid=True,
@@ -959,9 +1263,9 @@ while True:
                     xanchor="center",
                     x=0.5,
                     bgcolor='rgba(0,0,0,0)',
-                    font=dict(color=colors['chart_text'])
+                    font=dict(color=colors['chart_text'], size=9)
                 ),
-                margin=dict(l=40, r=20, t=40, b=40),
+                margin=dict(l=35, r=15, t=35, b=35),
                 hovermode='x unified'
             )
 
@@ -974,9 +1278,9 @@ while True:
         # Refresh info
         st.markdown(f"""
         <div class="refresh-info">
-            🔄 Auto-refresh: {'✅ Enabled' if st.session_state.auto_refresh else '❌ Disabled'} 
-            | ⏱️ Interval: {st.session_state.refresh_sec}s 
-            | 🕐 Last update: {datetime.now().strftime("%H:%M:%S")}
+            🔄 Auto-refresh: {'✅ On' if st.session_state.auto_refresh else '❌ Off'} 
+            | ⏱️ {st.session_state.refresh_sec}s 
+            | 🕐 {datetime.now().strftime("%H:%M:%S")}
         </div>
         """, unsafe_allow_html=True)
 
@@ -991,8 +1295,8 @@ while True:
 # -------------------------------
 st.markdown("""
 <div class="footer">
-    © 2025 STI PERUMDA TIRTAWENING — All Rights Reserved
+    © 2025 STI PERUMDA TIRTAWENING
     <br>
-    <small>🌊 Turbidity Monitoring System v2.0 | Powered by Streamlit</small>
+    <small>🌊 Turbidity Monitoring System v2.0</small>
 </div>
 """, unsafe_allow_html=True)
