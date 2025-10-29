@@ -1290,13 +1290,4 @@ while True:
     else:
         break
 
-# -------------------------------
-# FOOTER
-# -------------------------------
-st.markdown("""
-<div class="footer">
-    © 2025 STI PERUMDA TIRTAWENING
-    <br>
-    <small>🌊 Turbidity Monitoring System v2.0</small>
-</div>
-""", unsafe_allow_html=True)
+    
